@@ -9,9 +9,9 @@ local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
 
--- Nút mini khi thu nhỏ
+-- Mini button
 local miniBtn = Instance.new("TextButton")
-miniBtn.Text = "🖱 FB: TranQuangVinh"
+miniBtn.Text = "AutoClick - FB: TranQuangVinh"
 miniBtn.Size = UDim2.new(0, 160, 0, 30)
 miniBtn.Position = UDim2.new(0, 10, 1, -40)
 miniBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
@@ -22,7 +22,7 @@ miniBtn.Visible = false
 Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 8)
 miniBtn.Parent = gui
 
--- GUI chính
+-- Main Frame
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 200, 0, 270)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
@@ -33,7 +33,7 @@ frame.Active = true
 frame.Draggable = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
 
--- Tiêu đề
+-- Title
 local title = Instance.new("TextLabel", frame)
 title.Text = "AUTO CLICK - FB: TranQuangVinh"
 title.Size = UDim2.new(1, 0, 0, 30)
@@ -43,7 +43,7 @@ title.Font = Enum.Font.GothamBold
 title.TextScaled = true
 Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
--- Nút thu nhỏ
+-- Minimize
 local minimize = Instance.new("TextButton", frame)
 minimize.Text = "-"
 minimize.Size = UDim2.new(0, 25, 0, 25)
@@ -64,7 +64,7 @@ miniBtn.MouseButton1Click:Connect(function()
 	miniBtn.Visible = false
 end)
 
--- Nút tắt
+-- Close
 local close = Instance.new("TextButton", frame)
 close.Text = "x"
 close.Size = UDim2.new(0, 25, 0, 25)
@@ -79,7 +79,7 @@ close.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
 
--- Trạng thái
+-- Status
 local status = Instance.new("TextLabel", frame)
 status.Text = "📍 Chưa chọn vị trí"
 status.Position = UDim2.new(0, 0, 0, 30)
@@ -89,7 +89,7 @@ status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Tạo nút
+-- Button creator
 local function createBtn(text, y, callback, color)
 	local btn = Instance.new("TextButton", frame)
 	btn.Text = text
@@ -104,7 +104,7 @@ local function createBtn(text, y, callback, color)
 	return btn
 end
 
--- Chọn vị trí
+-- Select position
 createBtn("🎯 Chọn vị trí", 60, function()
 	local layer = Instance.new("ScreenGui")
 	layer.IgnoreGuiInset = true
@@ -130,26 +130,26 @@ createBtn("🎯 Chọn vị trí", 60, function()
 	end)
 end, Color3.fromRGB(100, 100, 255))
 
--- Reset vị trí
+-- Reset position
 createBtn("🗑 Reset vị trí", 95, function()
 	clickX = 0
 	clickY = 0
 	status.Text = "📍 Toạ độ đã reset!"
 end, Color3.fromRGB(180, 50, 50))
 
--- Tăng tốc độ
+-- Speed +
 createBtn("➕ Tăng tốc độ", 130, function()
 	delay = math.max(0.01, delay - 0.01)
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Giảm tốc độ
+-- Speed -
 createBtn("➖ Giảm tốc độ", 165, function()
 	delay += 0.01
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Bật/Tắt Auto
+-- Toggle autoclick
 createBtn("🟢 Bật / Tắt Auto", 200, function()
 	isClicking = not isClicking
 	if isClicking then
