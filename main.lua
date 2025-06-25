@@ -1,6 +1,6 @@
 local vim = game:GetService("VirtualInputManager")
 local gui = Instance.new("ScreenGui")
-gui.Name = "FB:QuangVinh"
+gui.Name = "AutoClickGUI"
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = true
 gui.Parent = gethui and gethui() or game:GetService("CoreGui")
@@ -9,10 +9,10 @@ local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
 
--- Mini nút thu nhỏ
+-- Nút thu nhỏ
 local miniBtn = Instance.new("TextButton")
-miniBtn.Text = "AutoClick - FB: TranQuangVinh"
-miniBtn.Size = UDim2.new(0, 160, 0, 30)
+miniBtn.Text = "AutoClick GUI"
+miniBtn.Size = UDim2.new(0, 140, 0, 30)
 miniBtn.Position = UDim2.new(0, 10, 1, -40)
 miniBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 miniBtn.TextColor3 = Color3.new(1,1,1)
@@ -22,8 +22,8 @@ miniBtn.Visible = false
 Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 8)
 miniBtn.Parent = gui
 
--- GUI chính
-local frame = Instance.new("Frame")
+-- Frame chính
+local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 220, 0, 300)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -31,28 +31,18 @@ frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-frame.Parent = gui
-
--- Thanh cuộn
-local scroll = Instance.new("ScrollingFrame", frame)
-scroll.Size = UDim2.new(1, 0, 1, -35)
-scroll.Position = UDim2.new(0, 0, 0, 35)
-scroll.CanvasSize = UDim2.new(0, 0, 0, 500)
-scroll.ScrollBarThickness = 5
-scroll.BackgroundTransparency = 1
 
 -- Tiêu đề
 local title = Instance.new("TextLabel", frame)
-title.Text = "AUTO CLICK - FB: TranQuangVinh"
+title.Text = "AUTO CLICK GUI"
 title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
-title.Parent = frame
 Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
--- Nút đóng
+-- Nút Đóng
 local close = Instance.new("TextButton", frame)
 close.Text = "x"
 close.Size = UDim2.new(0, 25, 0, 25)
@@ -86,6 +76,14 @@ miniBtn.MouseButton1Click:Connect(function()
 	miniBtn.Visible = false
 end)
 
+-- Scrolling
+local scroll = Instance.new("ScrollingFrame", frame)
+scroll.Size = UDim2.new(1, 0, 1, -35)
+scroll.Position = UDim2.new(0, 0, 0, 35)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 600)
+scroll.ScrollBarThickness = 5
+scroll.BackgroundTransparency = 1
+
 -- Trạng thái
 local status = Instance.new("TextLabel", scroll)
 status.Text = "📍 Chưa chọn vị trí"
@@ -96,7 +94,7 @@ status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Tạo nút
+-- Tạo nút nhanh
 local yPos = 35
 local function createBtn(text, callback, color)
 	local btn = Instance.new("TextButton", scroll)
@@ -113,11 +111,10 @@ local function createBtn(text, callback, color)
 	return btn
 end
 
--- Chọn vị trí
+-- Các nút
 createBtn("🎯 Chọn vị trí", function()
 	local layer = Instance.new("ScreenGui", gethui and gethui() or game:GetService("CoreGui"))
 	layer.IgnoreGuiInset = true
-
 	local full = Instance.new("TextButton", layer)
 	full.Size = UDim2.new(1, 0, 1, 0)
 	full.BackgroundTransparency = 1
@@ -138,26 +135,22 @@ createBtn("🎯 Chọn vị trí", function()
 	end)
 end, Color3.fromRGB(100, 100, 255))
 
--- Reset
 createBtn("🗑 Reset vị trí", function()
 	clickX = 0
 	clickY = 0
 	status.Text = "📍 Toạ độ đã reset!"
 end, Color3.fromRGB(180, 50, 50))
 
--- Tăng tốc độ
 createBtn("➕ Tăng tốc độ", function()
 	delay = math.max(0.01, delay - 0.01)
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Giảm tốc độ
 createBtn("➖ Giảm tốc độ", function()
 	delay += 0.01
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Bật/Tắt
 createBtn("🟢 Bật / Tắt Auto", function()
 	isClicking = not isClicking
 	if isClicking then
@@ -175,8 +168,8 @@ createBtn("🟢 Bật / Tắt Auto", function()
 	end
 end, Color3.fromRGB(0, 180, 0))
 
--- Nút copy Discord
-createBtn("📎 Copy Discord", function()
+-- Nút Join Discord
+createBtn("🔗 Join Discord", function()
 	setclipboard("https://discord.gg/KdH2N2Gn")
 	status.Text = "✅ Đã copy Discord!"
 end, Color3.fromRGB(50, 100, 255))
