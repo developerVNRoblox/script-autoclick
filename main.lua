@@ -8,9 +8,20 @@ local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
 local dot
-local minimized = false
 
--- Frame chính
+-- Mini nút hiện khi thu nhỏ
+local miniBtn = Instance.new("TextButton", gui)
+miniBtn.Text = "📌 AutoClick - FB: TranQuangVinh"
+miniBtn.Size = UDim2.new(0, 180, 0, 30)
+miniBtn.Position = UDim2.new(0.02, 0, 0.9, 0)
+miniBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+miniBtn.TextColor3 = Color3.new(1, 1, 1)
+miniBtn.Font = Enum.Font.GothamBold
+miniBtn.TextScaled = true
+miniBtn.Visible = false
+Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 8)
+
+-- GUI chính
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 200, 0, 270)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
@@ -20,41 +31,6 @@ frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-
-local function createBtn(text, y, callback, color)
-	local btn = Instance.new("TextButton", frame)
-	btn.Text = text
-	btn.Position = UDim2.new(0.1, 0, 0, y)
-	btn.Size = UDim2.new(0.8, 0, 0, 25)
-	btn.BackgroundColor3 = color or Color3.fromRGB(80, 80, 80)
-	btn.TextColor3 = Color3.new(1, 1, 1)
-	btn.Font = Enum.Font.GothamBold
-	btn.TextScaled = true
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
-	btn.MouseButton1Click:Connect(callback)
-	return btn
-end
-
--- Tiêu đề
-local title = Instance.new("TextLabel", frame)
-title.Text = "AUTO CLICK - FB: TranQuangVinh"
-title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-title.TextColor3 = Color3.new(1, 1, 1)
-title.Font = Enum.Font.GothamBold
-title.TextScaled = true
-Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
-
--- Nút thu gọn
-local minimize = Instance.new("TextButton", frame)
-minimize.Text = "-"
-minimize.Size = UDim2.new(0, 25, 0, 25)
-minimize.Position = UDim2.new(1, -55, 0, 2)
-minimize.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-minimize.TextColor3 = Color3.new(1, 1, 1)
-minimize.Font = Enum.Font.GothamBold
-minimize.TextScaled = true
-Instance.new("UICorner", minimize).CornerRadius = UDim.new(0, 8)
 
 -- Nút đóng
 local close = Instance.new("TextButton", frame)
@@ -71,18 +47,37 @@ close.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
 
+-- Nút thu nhỏ
+local minimize = Instance.new("TextButton", frame)
+minimize.Text = "-"
+minimize.Size = UDim2.new(0, 25, 0, 25)
+minimize.Position = UDim2.new(1, -55, 0, 2)
+minimize.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+minimize.TextColor3 = Color3.new(1, 1, 1)
+minimize.Font = Enum.Font.GothamBold
+minimize.TextScaled = true
+Instance.new("UICorner", minimize).CornerRadius = UDim.new(0, 8)
+
 minimize.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	for _, v in pairs(frame:GetChildren()) do
-		if v:IsA("TextButton") or v:IsA("TextLabel") then
-			if v ~= title and v ~= minimize and v ~= close then
-				v.Visible = not minimized
-			end
-		end
-	end
+	frame.Visible = false
+	miniBtn.Visible = true
 end)
 
--- Trạng thái
+miniBtn.MouseButton1Click:Connect(function()
+	frame.Visible = true
+	miniBtn.Visible = false
+end)
+
+-- Tiêu đề
+local title = Instance.new("TextLabel", frame)
+title.Text = "AUTO CLICK - FB: TranQuangVinh"
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
+
 local status = Instance.new("TextLabel", frame)
 status.Text = "📍 Chưa chọn vị trí"
 status.Position = UDim2.new(0, 0, 0, 30)
@@ -91,6 +86,21 @@ status.BackgroundTransparency = 1
 status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
+
+-- Tạo nút gọn
+local function createBtn(text, y, callback, color)
+	local btn = Instance.new("TextButton", frame)
+	btn.Text = text
+	btn.Position = UDim2.new(0.1, 0, 0, y)
+	btn.Size = UDim2.new(0.8, 0, 0, 25)
+	btn.BackgroundColor3 = color or Color3.fromRGB(80, 80, 80)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextScaled = true
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+	btn.MouseButton1Click:Connect(callback)
+	return btn
+end
 
 -- Chọn vị trí
 createBtn("🎯 Chọn vị trí", 60, function()
