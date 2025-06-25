@@ -8,7 +8,6 @@ gui.Parent = gethui and gethui() or game:GetService("CoreGui")
 local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
-local dot = nil
 
 -- Nút mini khi thu nhỏ
 local miniBtn = Instance.new("TextButton")
@@ -46,7 +45,7 @@ Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
 -- Nút thu nhỏ
 local minimize = Instance.new("TextButton", frame)
-minimize.Text = "📥"
+minimize.Text = "-"
 minimize.Size = UDim2.new(0, 25, 0, 25)
 minimize.Position = UDim2.new(1, -55, 0, 2)
 minimize.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -67,7 +66,7 @@ end)
 
 -- Nút tắt
 local close = Instance.new("TextButton", frame)
-close.Text = "❌"
+close.Text = "x"
 close.Size = UDim2.new(0, 25, 0, 25)
 close.Position = UDim2.new(1, -28, 0, 2)
 close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
@@ -124,16 +123,6 @@ createBtn("🎯 Chọn vị trí", 60, function()
 			clickX = x
 			clickY = y
 			status.Text = "📍 Toạ độ: " .. x .. ", " .. y
-
-			if dot then dot:Destroy() end
-			dot = Instance.new("Frame", gui)
-			dot.Size = UDim2.new(0, 10, 0, 10)
-			dot.Position = UDim2.new(0, x - 5, 0, y - 5)
-			dot.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-			dot.BorderSizePixel = 0
-			dot.ZIndex = 999
-			Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-
 			layer:Destroy()
 		else
 			status.Text = "👉 Nhấn lần 2 để xác nhận"
@@ -146,7 +135,6 @@ createBtn("🗑 Reset vị trí", 95, function()
 	clickX = 0
 	clickY = 0
 	status.Text = "📍 Toạ độ đã reset!"
-	if dot then dot:Destroy() end
 end, Color3.fromRGB(180, 50, 50))
 
 -- Tăng tốc độ
