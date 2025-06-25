@@ -1,3 +1,5 @@
+-- BẢN ĐÃ FIX: Thu nhỏ title, bố trí đẹp, Discord icon chất
+
 local vim = game:GetService("VirtualInputManager")
 local gui = Instance.new("ScreenGui")
 gui.Name = "AutoClickGUI"
@@ -9,7 +11,7 @@ local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
 
--- Nút thu nhỏ hiện khi GUI bị ẩn
+-- Nút mini khi thu nhỏ
 local miniBtn = Instance.new("TextButton", gui)
 miniBtn.Text = "📌"
 miniBtn.Size = UDim2.new(0, 30, 0, 30)
@@ -34,12 +36,12 @@ Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
 -- Header
 local title = Instance.new("TextLabel", frame)
 title.Text = "AUTO CLICK"
-title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+title.Size = UDim2.new(1, -60, 0, 25)
+title.Position = UDim2.new(0, 5, 0, 2)
+title.BackgroundTransparency = 1
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
-Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
 -- Nút đóng
 local close = Instance.new("TextButton", frame)
@@ -75,7 +77,7 @@ miniBtn.MouseButton1Click:Connect(function()
 	miniBtn.Visible = false
 end)
 
--- Trạng thái hiển thị
+-- Trạng thái
 local status = Instance.new("TextLabel", frame)
 status.Text = "📍 Chưa chọn vị trí"
 status.Position = UDim2.new(0, 0, 0, 30)
@@ -85,7 +87,7 @@ status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Hàm tạo nút nhỏ
+-- Hàm tạo nút
 local function createBtn(text, x, y, callback, color)
 	local btn = Instance.new("TextButton", frame)
 	btn.Text = text
@@ -100,7 +102,7 @@ local function createBtn(text, x, y, callback, color)
 	return btn
 end
 
--- Nút: Chọn vị trí
+-- Chọn vùng
 createBtn("🎯", 0.05, 60, function()
 	local layer = Instance.new("ScreenGui", gethui and gethui() or game:GetService("CoreGui"))
 	layer.IgnoreGuiInset = true
@@ -123,40 +125,40 @@ createBtn("🎯", 0.05, 60, function()
 	end)
 end)
 
--- Nút: Reset
+-- Reset
 createBtn("❌", 0.55, 60, function()
 	clickX = 0
 	clickY = 0
-	status.Text = "📍 Đã reset!"
+	status.Text = "📍 Reset thành công!"
 end, Color3.fromRGB(150, 60, 60))
 
--- Nút: Tăng tốc
+-- Tăng tốc
 createBtn("➕", 0.05, 95, function()
 	delay = math.max(0.01, delay - 0.01)
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end, Color3.fromRGB(60, 120, 60))
 
--- Nút: Giảm tốc
+-- Giảm tốc
 createBtn("➖", 0.55, 95, function()
 	delay += 0.01
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end, Color3.fromRGB(60, 120, 60))
 
--- Nút Auto ở giữa
-local autoBtn = Instance.new("TextButton", frame)
-autoBtn.Text = "🟢 Auto Click"
-autoBtn.Position = UDim2.new(0.1, 0, 0, 130)
-autoBtn.Size = UDim2.new(0.8, 0, 0, 30)
-autoBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
-autoBtn.TextColor3 = Color3.new(1, 1, 1)
-autoBtn.Font = Enum.Font.GothamBold
-autoBtn.TextScaled = true
-Instance.new("UICorner", autoBtn).CornerRadius = UDim.new(0, 10)
+-- Nút bật / tắt auto
+local toggleBtn = Instance.new("TextButton", frame)
+toggleBtn.Text = "🟢 Bật / Tắt"
+toggleBtn.Position = UDim2.new(0.1, 0, 0, 130)
+toggleBtn.Size = UDim2.new(0.8, 0, 0, 30)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextScaled = true
+Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 10)
 
-autoBtn.MouseButton1Click:Connect(function()
+toggleBtn.MouseButton1Click:Connect(function()
 	isClicking = not isClicking
 	if isClicking then
-		status.Text = "🔁 Đang auto click tại: " .. clickX .. ", " .. clickY
+		status.Text = "🔁 Click tại: " .. clickX .. ", " .. clickY
 		coroutine.wrap(function()
 			while isClicking do
 				vim:SendMouseButtonEvent(clickX, clickY, 0, true, game, 0)
@@ -166,19 +168,17 @@ autoBtn.MouseButton1Click:Connect(function()
 			end
 		end)()
 	else
-		status.Text = "⛔ Đã tắt auto click"
+		status.Text = "⛔ Đã tắt auto"
 	end
 end)
 
--- Nút Discord góc dưới phải
-local discord = Instance.new("TextButton", frame)
-discord.Text = "💬"
+-- Nút Discord (icon đẹp)
+local discord = Instance.new("ImageButton", frame)
 discord.Size = UDim2.new(0, 25, 0, 25)
 discord.Position = UDim2.new(1, -30, 1, -30)
 discord.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-discord.TextColor3 = Color3.new(1, 1, 1)
-discord.Font = Enum.Font.GothamBold
-discord.TextScaled = true
+discord.Image = "rbxassetid://6034974950" -- icon Discord
+discord.ImageColor3 = Color3.new(1,1,1)
 Instance.new("UICorner", discord).CornerRadius = UDim.new(1, 0)
 
 discord.MouseButton1Click:Connect(function()
