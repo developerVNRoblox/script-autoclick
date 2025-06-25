@@ -9,7 +9,7 @@ local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
 
--- Mini button
+-- Mini nút thu nhỏ
 local miniBtn = Instance.new("TextButton")
 miniBtn.Text = "AutoClick - FB: TranQuangVinh"
 miniBtn.Size = UDim2.new(0, 160, 0, 30)
@@ -22,18 +22,26 @@ miniBtn.Visible = false
 Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 8)
 miniBtn.Parent = gui
 
--- Main Frame
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 200, 0, 270)
+-- GUI chính
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 300)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-frame.BackgroundTransparency = 0.2
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+frame.Parent = gui
 
--- Title
+-- Thanh cuộn
+local scroll = Instance.new("ScrollingFrame", frame)
+scroll.Size = UDim2.new(1, 0, 1, -35)
+scroll.Position = UDim2.new(0, 0, 0, 35)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 500)
+scroll.ScrollBarThickness = 5
+scroll.BackgroundTransparency = 1
+
+-- Tiêu đề
 local title = Instance.new("TextLabel", frame)
 title.Text = "AUTO CLICK - FB: TranQuangVinh"
 title.Size = UDim2.new(1, 0, 0, 30)
@@ -41,9 +49,24 @@ title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
+title.Parent = frame
 Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
--- Minimize
+-- Nút đóng
+local close = Instance.new("TextButton", frame)
+close.Text = "x"
+close.Size = UDim2.new(0, 25, 0, 25)
+close.Position = UDim2.new(1, -28, 0, 2)
+close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+close.TextColor3 = Color3.new(1, 1, 1)
+close.Font = Enum.Font.GothamBold
+close.TextScaled = true
+Instance.new("UICorner", close).CornerRadius = UDim.new(0, 8)
+close.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
+
+-- Nút thu nhỏ
 local minimize = Instance.new("TextButton", frame)
 minimize.Text = "-"
 minimize.Size = UDim2.new(0, 25, 0, 25)
@@ -53,7 +76,6 @@ minimize.TextColor3 = Color3.new(1, 1, 1)
 minimize.Font = Enum.Font.GothamBold
 minimize.TextScaled = true
 Instance.new("UICorner", minimize).CornerRadius = UDim.new(0, 8)
-
 minimize.MouseButton1Click:Connect(function()
 	frame.Visible = false
 	miniBtn.Visible = true
@@ -64,51 +86,37 @@ miniBtn.MouseButton1Click:Connect(function()
 	miniBtn.Visible = false
 end)
 
--- Close
-local close = Instance.new("TextButton", frame)
-close.Text = "x"
-close.Size = UDim2.new(0, 25, 0, 25)
-close.Position = UDim2.new(1, -28, 0, 2)
-close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-close.TextColor3 = Color3.new(1, 1, 1)
-close.Font = Enum.Font.GothamBold
-close.TextScaled = true
-Instance.new("UICorner", close).CornerRadius = UDim.new(0, 8)
-
-close.MouseButton1Click:Connect(function()
-	gui:Destroy()
-end)
-
--- Status
-local status = Instance.new("TextLabel", frame)
+-- Trạng thái
+local status = Instance.new("TextLabel", scroll)
 status.Text = "📍 Chưa chọn vị trí"
-status.Position = UDim2.new(0, 0, 0, 30)
-status.Size = UDim2.new(1, 0, 0, 20)
+status.Position = UDim2.new(0, 0, 0, 0)
+status.Size = UDim2.new(1, 0, 0, 25)
 status.BackgroundTransparency = 1
 status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Button creator
-local function createBtn(text, y, callback, color)
-	local btn = Instance.new("TextButton", frame)
+-- Tạo nút
+local yPos = 35
+local function createBtn(text, callback, color)
+	local btn = Instance.new("TextButton", scroll)
 	btn.Text = text
-	btn.Position = UDim2.new(0.1, 0, 0, y)
-	btn.Size = UDim2.new(0.8, 0, 0, 25)
+	btn.Position = UDim2.new(0.1, 0, 0, yPos)
+	btn.Size = UDim2.new(0.8, 0, 0, 30)
 	btn.BackgroundColor3 = color or Color3.fromRGB(80, 80, 80)
 	btn.TextColor3 = Color3.new(1, 1, 1)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextScaled = true
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
 	btn.MouseButton1Click:Connect(callback)
+	yPos += 40
 	return btn
 end
 
--- Select position
-createBtn("🎯 Chọn vị trí", 60, function()
-	local layer = Instance.new("ScreenGui")
+-- Chọn vị trí
+createBtn("🎯 Chọn vị trí", function()
+	local layer = Instance.new("ScreenGui", gethui and gethui() or game:GetService("CoreGui"))
 	layer.IgnoreGuiInset = true
-	layer.Parent = gethui and gethui() or game:GetService("CoreGui")
 
 	local full = Instance.new("TextButton", layer)
 	full.Size = UDim2.new(1, 0, 1, 0)
@@ -130,27 +138,27 @@ createBtn("🎯 Chọn vị trí", 60, function()
 	end)
 end, Color3.fromRGB(100, 100, 255))
 
--- Reset position
-createBtn("🗑 Reset vị trí", 95, function()
+-- Reset
+createBtn("🗑 Reset vị trí", function()
 	clickX = 0
 	clickY = 0
 	status.Text = "📍 Toạ độ đã reset!"
 end, Color3.fromRGB(180, 50, 50))
 
--- Speed +
-createBtn("➕ Tăng tốc độ", 130, function()
+-- Tăng tốc độ
+createBtn("➕ Tăng tốc độ", function()
 	delay = math.max(0.01, delay - 0.01)
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Speed -
-createBtn("➖ Giảm tốc độ", 165, function()
+-- Giảm tốc độ
+createBtn("➖ Giảm tốc độ", function()
 	delay += 0.01
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Toggle autoclick
-createBtn("🟢 Bật / Tắt Auto", 200, function()
+-- Bật/Tắt
+createBtn("🟢 Bật / Tắt Auto", function()
 	isClicking = not isClicking
 	if isClicking then
 		status.Text = "🔁 Đang click tại: " .. clickX .. ", " .. clickY
@@ -166,3 +174,9 @@ createBtn("🟢 Bật / Tắt Auto", 200, function()
 		status.Text = "⛔ Đã tắt auto click"
 	end
 end, Color3.fromRGB(0, 180, 0))
+
+-- Nút copy Discord
+createBtn("📎 Copy Discord", function()
+	setclipboard("https://discord.gg/KdH2N2Gn")
+	status.Text = "✅ Đã copy Discord!"
+end, Color3.fromRGB(50, 100, 255))
