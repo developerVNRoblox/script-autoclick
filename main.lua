@@ -1,5 +1,3 @@
--- BẢN ĐÃ FIX: Thu nhỏ title, bố trí đẹp, Discord icon chất
-
 local vim = game:GetService("VirtualInputManager")
 local gui = Instance.new("ScreenGui")
 gui.Name = "AutoClickGUI"
@@ -11,7 +9,7 @@ local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
 
--- Nút mini khi thu nhỏ
+-- Mini nút hiện khi thu nhỏ
 local miniBtn = Instance.new("TextButton", gui)
 miniBtn.Text = "📌"
 miniBtn.Size = UDim2.new(0, 30, 0, 30)
@@ -25,7 +23,7 @@ Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(1, 0)
 
 -- GUI chính
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 200, 0, 260)
+frame.Size = UDim2.new(0, 180, 0, 220)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 frame.BorderSizePixel = 0
@@ -172,13 +170,13 @@ toggleBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Nút Discord (icon đẹp)
+-- Nút Discord (dưới nút bật)
 local discord = Instance.new("ImageButton", frame)
 discord.Size = UDim2.new(0, 25, 0, 25)
-discord.Position = UDim2.new(1, -30, 1, -30)
+discord.Position = UDim2.new(0.5, -12, 0, 170)
 discord.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
 discord.Image = "rbxassetid://6034974950" -- icon Discord
-discord.ImageColor3 = Color3.new(1,1,1)
+discord.ImageColor3 = Color3.new(1, 1, 1)
 Instance.new("UICorner", discord).CornerRadius = UDim.new(1, 0)
 
 discord.MouseButton1Click:Connect(function()
