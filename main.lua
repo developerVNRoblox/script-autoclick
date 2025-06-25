@@ -6,7 +6,7 @@ local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "TrumVinhClickGUI"
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 180, 0, 200)
+frame.Size = UDim2.new(0, 180, 0, 220)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BackgroundTransparency = 0.2
@@ -33,7 +33,6 @@ status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Tốc độ click
 local delay = 0.1
 local delayLabel = Instance.new("TextLabel", frame)
 delayLabel.Text = "Tốc độ: 0.10s"
@@ -74,7 +73,6 @@ setBtn.Font = Enum.Font.GothamBold
 setBtn.TextScaled = true
 Instance.new("UICorner", setBtn).CornerRadius = UDim.new(0, 8)
 
--- Nút chọn vị trí
 local chooseBtn = Instance.new("TextButton", frame)
 chooseBtn.Text = "🎯 Đặt vị trí click"
 chooseBtn.Position = UDim2.new(0.1, 0, 0, 140)
@@ -95,11 +93,9 @@ toggle.Font = Enum.Font.GothamBold
 toggle.TextScaled = true
 Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 8)
 
--- Tọa độ click
 local clickX = cam.ViewportSize.X / 2
 local clickY = cam.ViewportSize.Y / 2
 
--- Logic tăng giảm
 minus.MouseButton1Click:Connect(function()
 	delay = math.min(delay + 0.01, 1)
 	delayLabel.Text = string.format("Tốc độ: %.2fs", delay)
@@ -114,27 +110,35 @@ setBtn.MouseButton1Click:Connect(function()
 	delayLabel.Text = string.format("Tốc độ: %.2fs", delay)
 end)
 
--- Đặt vị trí bằng chạm
 chooseBtn.MouseButton1Click:Connect(function()
-	status.Text = "👉 Chạm vào màn hình để chọn vị trí..."
+	status.Text = "👉 Chạm màn hình để chọn vị trí..."
 	local conn
 	conn = uis.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
 			clickX = input.Position.X
-			clickY = input.Position.Y
-			status.Text = string.format("📍 Đã chọn vị trí: %d, %d", clickX, clickY)
+			clickY = math.clamp(input.Position.Y, 0, cam.ViewportSize.Y - 2)
+			status.Text = string.format("📍 Vị trí chọn: %d, %d", clickX, clickY)
+
+			-- hiển thị chấm đỏ
+			local dot = Instance.new("Frame", gui)
+			dot.Size = UDim2.new(0, 10, 0, 10)
+			dot.Position = UDim2.new(0, clickX - 5, 0, clickY - 5)
+			dot.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+			dot.BorderSizePixel = 0
+			dot.ZIndex = 999
+			Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
 			conn:Disconnect()
 		end
 	end)
 end)
 
--- Auto Click
 local isClicking = false
 
 toggle.MouseButton1Click:Connect(function()
 	isClicking = not isClicking
 	if isClicking then
-		status.Text = "✅ Đang click tại " .. clickX .. ", " .. clickY
+		status.Text = "✅ Click tại: " .. clickX .. "," .. clickY
 		toggle.Text = "Tắt Auto Click"
 		toggle.BackgroundColor3 = Color3.fromRGB(180, 50, 0)
 
