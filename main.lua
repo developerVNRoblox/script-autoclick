@@ -1,12 +1,11 @@
 local vim = game:GetService("VirtualInputManager")
 local cam = workspace.CurrentCamera
-local UserInputService = game:GetService("UserInputService")
 
 local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "TrumVinhClickGUI"
+gui.Name = "FB:TranQuangVinh"
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 220, 0, 180)
+frame.Size = UDim2.new(0, 180, 0, 170)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BackgroundTransparency = 0.2
@@ -14,76 +13,102 @@ frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
 
+local uiCorner = Instance.new("UICorner", frame)
+uiCorner.CornerRadius = UDim.new(0, 10)
+
 local title = Instance.new("TextLabel", frame)
-title.Text = "AUTO CLICK - TrumVinh"
+title.Text = "AUTO CLICK"
 title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
 local status = Instance.new("TextLabel", frame)
 status.Text = "Trạng thái: ❌ TẮT"
 status.Position = UDim2.new(0, 0, 0, 30)
-status.Size = UDim2.new(1, 0, 0, 25)
-status.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-status.TextColor3 = Color3.fromRGB(255, 255, 255)
+status.Size = UDim2.new(1, 0, 0, 20)
+status.BackgroundTransparency = 1
+status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
+-- Tốc độ
+local delay = 0.1
+local delayLabel = Instance.new("TextLabel", frame)
+delayLabel.Text = "Tốc độ: 0.10s"
+delayLabel.Position = UDim2.new(0, 0, 0, 55)
+delayLabel.Size = UDim2.new(1, 0, 0, 20)
+delayLabel.BackgroundTransparency = 1
+delayLabel.TextColor3 = Color3.new(1, 1, 1)
+delayLabel.Font = Enum.Font.Gotham
+delayLabel.TextScaled = true
+
+local minus = Instance.new("TextButton", frame)
+minus.Text = "-"
+minus.Position = UDim2.new(0.1, 0, 0, 80)
+minus.Size = UDim2.new(0.2, 0, 0, 25)
+minus.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+minus.TextColor3 = Color3.new(1, 1, 1)
+minus.Font = Enum.Font.GothamBold
+minus.TextScaled = true
+Instance.new("UICorner", minus).CornerRadius = UDim.new(0, 8)
+
+local plus = Instance.new("TextButton", frame)
+plus.Text = "+"
+plus.Position = UDim2.new(0.7, 0, 0, 80)
+plus.Size = UDim2.new(0.2, 0, 0, 25)
+plus.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+plus.TextColor3 = Color3.new(1, 1, 1)
+plus.Font = Enum.Font.GothamBold
+plus.TextScaled = true
+Instance.new("UICorner", plus).CornerRadius = UDim.new(0, 8)
+
+local setBtn = Instance.new("TextButton", frame)
+setBtn.Text = "Đặt tốc độ"
+setBtn.Position = UDim2.new(0.1, 0, 0, 110)
+setBtn.Size = UDim2.new(0.8, 0, 0, 25)
+setBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+setBtn.TextColor3 = Color3.new(1, 1, 1)
+setBtn.Font = Enum.Font.GothamBold
+setBtn.TextScaled = true
+Instance.new("UICorner", setBtn).CornerRadius = UDim.new(0, 8)
+
 local toggle = Instance.new("TextButton", frame)
 toggle.Text = "Bật Auto Click"
-toggle.Position = UDim2.new(0.1, 0, 1, -45)
-toggle.Size = UDim2.new(0.8, 0, 0, 35)
-toggle.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+toggle.Position = UDim2.new(0.1, 0, 1, -30)
+toggle.Size = UDim2.new(0.8, 0, 0, 25)
+toggle.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
 toggle.TextColor3 = Color3.new(1, 1, 1)
 toggle.Font = Enum.Font.GothamBold
 toggle.TextScaled = true
+Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 8)
 
-local sliderFrame = Instance.new("Frame", frame)
-sliderFrame.Position = UDim2.new(0.05, 0, 0, 60)
-sliderFrame.Size = UDim2.new(0.9, 0, 0, 25)
-sliderFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-sliderFrame.BorderSizePixel = 0
-
-local sliderBar = Instance.new("Frame", sliderFrame)
-sliderBar.Size = UDim2.new(0.5, 0, 1, 0)
-sliderBar.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
-sliderBar.BorderSizePixel = 0
-
-local clickDelay = 0.05 -- mặc định
-
-local dragging = false
-
-sliderFrame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-	end
+-- Logic tăng giảm
+minus.MouseButton1Click:Connect(function()
+	delay = math.min(delay + 0.01, 1)
+	delayLabel.Text = string.format("Tốc độ: %.2fs", delay)
 end)
 
-sliderFrame.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
-	end
+plus.MouseButton1Click:Connect(function()
+	delay = math.max(delay - 0.01, 0.01)
+	delayLabel.Text = string.format("Tốc độ: %.2fs", delay)
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-	if dragging then
-		local pos = math.clamp((input.Position.X - sliderFrame.AbsolutePosition.X) / sliderFrame.AbsoluteSize.X, 0, 1)
-		sliderBar.Size = UDim2.new(pos, 0, 1, 0)
-		clickDelay = 0.01 + (1 - pos) * 0.3 -- delay từ 0.01s tới 0.31s
-	end
-end)
-
--- Auto Click logic
+-- Auto Click
 local isClicking = false
+
+setBtn.MouseButton1Click:Connect(function()
+	delayLabel.Text = string.format("Tốc độ: %.2fs", delay)
+end)
 
 toggle.MouseButton1Click:Connect(function()
 	isClicking = not isClicking
 	if isClicking then
 		status.Text = "Trạng thái: ✅ ĐANG CLICK"
 		toggle.Text = "Tắt Auto Click"
-		toggle.BackgroundColor3 = Color3.fromRGB(180, 40, 0)
+		toggle.BackgroundColor3 = Color3.fromRGB(180, 50, 0)
 
 		coroutine.wrap(function()
 			while isClicking do
@@ -92,12 +117,12 @@ toggle.MouseButton1Click:Connect(function()
 				vim:SendMouseButtonEvent(x, y, 0, true, game, 0)
 				wait(0.02)
 				vim:SendMouseButtonEvent(x, y, 0, false, game, 0)
-				wait(clickDelay)
+				wait(delay)
 			end
 		end)()
 	else
 		status.Text = "Trạng thái: ❌ TẮT"
 		toggle.Text = "Bật Auto Click"
-		toggle.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+		toggle.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
 	end
 end)
