@@ -2,23 +2,24 @@ local vim = game:GetService("VirtualInputManager")
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "FB:QuangVinh"
 
--- Toạ độ & trạng thái
+-- Biến trạng thái
 local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
 local dot = nil
 
--- Nút mini khi thu nhỏ
-local miniBtn = Instance.new("TextButton", gui)
-miniBtn.Text = "📌 AutoClick - FB: TranQuangVinh"
-miniBtn.Size = UDim2.new(0, 180, 0, 30)
-miniBtn.Position = UDim2.new(0.02, 0, 0.92, 0)
-miniBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-miniBtn.TextColor3 = Color3.new(1, 1, 1)
+-- Mini icon khi thu nhỏ
+local miniBtn = Instance.new("TextButton")
+miniBtn.Text = "🖱 FB: TranQuangVinh"
+miniBtn.Size = UDim2.new(0, 160, 0, 30)
+miniBtn.Position = UDim2.new(0, 10, 1, -40)
+miniBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+miniBtn.TextColor3 = Color3.new(1,1,1)
 miniBtn.Font = Enum.Font.GothamBold
 miniBtn.TextScaled = true
 miniBtn.Visible = false
 Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 8)
+miniBtn.Parent = gui
 
 -- GUI chính
 local frame = Instance.new("Frame", gui)
@@ -45,7 +46,7 @@ Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 -- Nút thu nhỏ
 local minimize = Instance.new("TextButton", frame)
 minimize.Name = "minimize"
-minimize.Text = "📥"
+minimize.Text = "-"
 minimize.Size = UDim2.new(0, 25, 0, 25)
 minimize.Position = UDim2.new(1, -55, 0, 2)
 minimize.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -54,20 +55,10 @@ minimize.Font = Enum.Font.GothamBold
 minimize.TextScaled = true
 Instance.new("UICorner", minimize).CornerRadius = UDim.new(0, 8)
 
-minimize.MouseButton1Click:Connect(function()
-	frame.Visible = false
-	miniBtn.Visible = true
-end)
-
-miniBtn.MouseButton1Click:Connect(function()
-	frame.Visible = true
-	miniBtn.Visible = false
-end)
-
 -- Nút tắt
 local close = Instance.new("TextButton", frame)
 close.Name = "close"
-close.Text = "❌"
+close.Text = "x"
 close.Size = UDim2.new(0, 25, 0, 25)
 close.Position = UDim2.new(1, -28, 0, 2)
 close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
@@ -80,9 +71,20 @@ close.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
 
--- Trạng thái
+-- Bấm thu nhỏ thì hiện miniBtn
+minimize.MouseButton1Click:Connect(function()
+	frame.Visible = false
+	miniBtn.Visible = true
+end)
+
+-- Mở lại GUI khi bấm miniBtn
+miniBtn.MouseButton1Click:Connect(function()
+	frame.Visible = true
+	miniBtn.Visible = false
+end)
+
+-- Label trạng thái
 local status = Instance.new("TextLabel", frame)
-status.Name = "status"
 status.Text = "📍 Chưa chọn vị trí"
 status.Position = UDim2.new(0, 0, 0, 30)
 status.Size = UDim2.new(1, 0, 0, 20)
@@ -91,7 +93,7 @@ status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Tạo nút tiện lợi
+-- Tạo nút gọn
 local function createBtn(text, y, callback, color)
 	local btn = Instance.new("TextButton", frame)
 	btn.Text = text
@@ -106,7 +108,7 @@ local function createBtn(text, y, callback, color)
 	return btn
 end
 
--- Chọn vị trí click
+-- Chọn vị trí
 createBtn("🎯 Chọn vị trí", 60, function()
 	local layer = Instance.new("ScreenGui", game.CoreGui)
 	local full = Instance.new("TextButton", layer)
@@ -147,19 +149,18 @@ createBtn("🗑 Reset vị trí", 95, function()
 	if dot then dot:Destroy() end
 end, Color3.fromRGB(180, 50, 50))
 
--- Tăng tốc độ
+-- Tăng/Giảm tốc độ
 createBtn("➕ Tăng tốc độ", 130, function()
 	delay = math.max(0.01, delay - 0.01)
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Giảm tốc độ
 createBtn("➖ Giảm tốc độ", 165, function()
 	delay += 0.01
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Bật/Tắt AutoClick
+-- Auto Click Toggle
 createBtn("🟢 Bật / Tắt Auto", 200, function()
 	isClicking = not isClicking
 	if isClicking then
