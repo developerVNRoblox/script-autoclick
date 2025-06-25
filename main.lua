@@ -1,5 +1,4 @@
 local vim = game:GetService("VirtualInputManager")
-local cam = workspace.CurrentCamera
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "FB:QuangVinh"
 
@@ -7,19 +6,8 @@ gui.Name = "FB:QuangVinh"
 local clickX, clickY = 0, 0
 local isClicking = false
 local delay = 0.1
-local dot
-
--- Mini nút hiện khi thu nhỏ
-local miniBtn = Instance.new("TextButton", gui)
-miniBtn.Text = "📌 AutoClick - FB: TranQuangVinh"
-miniBtn.Size = UDim2.new(0, 180, 0, 30)
-miniBtn.Position = UDim2.new(0.02, 0, 0.9, 0)
-miniBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-miniBtn.TextColor3 = Color3.new(1, 1, 1)
-miniBtn.Font = Enum.Font.GothamBold
-miniBtn.TextScaled = true
-miniBtn.Visible = false
-Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 8)
+local dot = nil
+local minimized = false
 
 -- GUI chính
 local frame = Instance.new("Frame", gui)
@@ -34,7 +22,8 @@ Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
 
 -- Nút đóng
 local close = Instance.new("TextButton", frame)
-close.Text = "X"
+close.Name = "close"
+close.Text = "❌"
 close.Size = UDim2.new(0, 25, 0, 25)
 close.Position = UDim2.new(1, -28, 0, 2)
 close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
@@ -49,7 +38,8 @@ end)
 
 -- Nút thu nhỏ
 local minimize = Instance.new("TextButton", frame)
-minimize.Text = "-"
+minimize.Name = "minimize"
+minimize.Text = "📥"
 minimize.Size = UDim2.new(0, 25, 0, 25)
 minimize.Position = UDim2.new(1, -55, 0, 2)
 minimize.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -59,17 +49,17 @@ minimize.TextScaled = true
 Instance.new("UICorner", minimize).CornerRadius = UDim.new(0, 8)
 
 minimize.MouseButton1Click:Connect(function()
-	frame.Visible = false
-	miniBtn.Visible = true
-end)
-
-miniBtn.MouseButton1Click:Connect(function()
-	frame.Visible = true
-	miniBtn.Visible = false
+	minimized = not minimized
+	for _, v in pairs(frame:GetChildren()) do
+		if (v:IsA("TextButton") or v:IsA("TextLabel")) and v.Name ~= "minimize" and v.Name ~= "close" and v.Name ~= "title" then
+			v.Visible = not minimized
+		end
+	end
 end)
 
 -- Tiêu đề
 local title = Instance.new("TextLabel", frame)
+title.Name = "title"
 title.Text = "AUTO CLICK - FB: TranQuangVinh"
 title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
@@ -78,7 +68,9 @@ title.Font = Enum.Font.GothamBold
 title.TextScaled = true
 Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
+-- Trạng thái
 local status = Instance.new("TextLabel", frame)
+status.Name = "status"
 status.Text = "📍 Chưa chọn vị trí"
 status.Position = UDim2.new(0, 0, 0, 30)
 status.Size = UDim2.new(1, 0, 0, 20)
@@ -87,7 +79,7 @@ status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Tạo nút gọn
+-- Tạo nút tiện
 local function createBtn(text, y, callback, color)
 	local btn = Instance.new("TextButton", frame)
 	btn.Text = text
