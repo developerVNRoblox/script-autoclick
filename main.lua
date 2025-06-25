@@ -1,18 +1,18 @@
 local vim = game:GetService("VirtualInputManager")
 local cam = workspace.CurrentCamera
 local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "AutoclickV2_GUI"
+gui.Name = "FB:QuangVinh"
 
--- Toạ độ click & bù lệch
+-- Toạ độ & state
 local clickX, clickY = 0, 0
-local offsetX, offsetY = 0, 0
 local isClicking = false
 local delay = 0.1
 local dot
+local minimized = false
 
--- GUI khung chính
+-- Frame chính
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 180, 0, 260)
+frame.Size = UDim2.new(0, 200, 0, 270)
 frame.Position = UDim2.new(0.02, 0, 0.4, 0)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 frame.BackgroundTransparency = 0.2
@@ -35,9 +35,9 @@ local function createBtn(text, y, callback, color)
 	return btn
 end
 
--- Tiêu đề & trạng thái
+-- Tiêu đề
 local title = Instance.new("TextLabel", frame)
-title.Text = "AUTO CLICK V2.5"
+title.Text = "AUTO CLICK - FB: TranQuangVinh"
 title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 title.TextColor3 = Color3.new(1, 1, 1)
@@ -45,6 +45,44 @@ title.Font = Enum.Font.GothamBold
 title.TextScaled = true
 Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
+-- Nút thu gọn
+local minimize = Instance.new("TextButton", frame)
+minimize.Text = "-"
+minimize.Size = UDim2.new(0, 25, 0, 25)
+minimize.Position = UDim2.new(1, -55, 0, 2)
+minimize.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+minimize.TextColor3 = Color3.new(1, 1, 1)
+minimize.Font = Enum.Font.GothamBold
+minimize.TextScaled = true
+Instance.new("UICorner", minimize).CornerRadius = UDim.new(0, 8)
+
+-- Nút đóng
+local close = Instance.new("TextButton", frame)
+close.Text = "X"
+close.Size = UDim2.new(0, 25, 0, 25)
+close.Position = UDim2.new(1, -28, 0, 2)
+close.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+close.TextColor3 = Color3.new(1, 1, 1)
+close.Font = Enum.Font.GothamBold
+close.TextScaled = true
+Instance.new("UICorner", close).CornerRadius = UDim.new(0, 8)
+
+close.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
+
+minimize.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	for _, v in pairs(frame:GetChildren()) do
+		if v:IsA("TextButton") or v:IsA("TextLabel") then
+			if v ~= title and v ~= minimize and v ~= close then
+				v.Visible = not minimized
+			end
+		end
+	end
+end)
+
+-- Trạng thái
 local status = Instance.new("TextLabel", frame)
 status.Text = "📍 Chưa chọn vị trí"
 status.Position = UDim2.new(0, 0, 0, 30)
@@ -54,7 +92,7 @@ status.TextColor3 = Color3.new(1, 1, 1)
 status.Font = Enum.Font.Gotham
 status.TextScaled = true
 
--- Nút chọn vị trí
+-- Chọn vị trí
 createBtn("🎯 Chọn vị trí", 60, function()
 	local layer = Instance.new("ScreenGui", game.CoreGui)
 	local full = Instance.new("TextButton", layer)
@@ -87,41 +125,35 @@ createBtn("🎯 Chọn vị trí", 60, function()
 	end)
 end, Color3.fromRGB(100, 100, 255))
 
--- Nút reset vị trí
+-- Reset vị trí
 createBtn("🗑 Reset vị trí", 95, function()
 	clickX = 0
 	clickY = 0
-	offsetX = 0
-	offsetY = 0
 	status.Text = "📍 Toạ độ đã reset!"
 	if dot then dot:Destroy() end
 end, Color3.fromRGB(180, 50, 50))
 
--- Tăng / Giảm delay
+-- Tăng/Giảm tốc độ
 createBtn("➕ Tăng tốc độ", 130, function()
 	delay = math.max(0.01, delay - 0.01)
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
 createBtn("➖ Giảm tốc độ", 165, function()
-	delay = delay + 0.01
+	delay += 0.01
 	status.Text = "⏱ Tốc độ: " .. string.format("%.2fs", delay)
 end)
 
--- Bù lệch
-createBtn("⬅ Bù X-", 200, function() offsetX -= 1 end)
-createBtn("➡ Bù X+", 230, function() offsetX += 1 end)
-
--- Auto click toggle
-createBtn("🟢 Bật / Tắt Auto", 200 + 30 + 10, function()
+-- Auto Click Toggle
+createBtn("🟢 Bật / Tắt Auto", 200, function()
 	isClicking = not isClicking
 	if isClicking then
-		status.Text = "🔁 Đang click tại: " .. (clickX + offsetX) .. "," .. (clickY + offsetY)
+		status.Text = "🔁 Đang click tại: " .. clickX .. ", " .. clickY
 		coroutine.wrap(function()
 			while isClicking do
-				vim:SendMouseButtonEvent(clickX + offsetX, clickY + offsetY, 0, true, game, 0)
+				vim:SendMouseButtonEvent(clickX, clickY, 0, true, game, 0)
 				wait(0.02)
-				vim:SendMouseButtonEvent(clickX + offsetX, clickY + offsetY, 0, false, game, 0)
+				vim:SendMouseButtonEvent(clickX, clickY, 0, false, game, 0)
 				wait(delay)
 			end
 		end)()
